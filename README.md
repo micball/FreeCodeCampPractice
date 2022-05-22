@@ -1,4 +1,4 @@
-# FreeCodeCampe
+# FreeCodeCamp
 Free Code Camp is a free online resource for learning how to code.
 This folder is a sample of some of the code I've been learning to make through the JavaScript Algorithims and Data Structures certification course.
 
