@@ -1,65 +1,126 @@
-[ [ 'ONE HUNDRED', 100 ],
-  [ 'TWENTY', 60 ],
-  [ 'TEN', 20 ],
-  [ 'FIVE', 55 ],
-  [ 'ONE', 90 ],
-  [ 'QUARTER', 4.25 ],
-  [ 'DIME', 3.1 ],
-  [ 'NICKEL', 2.05 ],
-  [ 'PENNY', 1.01 ] ]
-
 function checkCashRegister(price, cash, cid) {
-  let totPen = cid[0][1]/0.01;
-  let totNic = Math.round(cid[1][1]/0.05);
-  let totDim = cid[2][1]/0.10;
-  let totQua = cid[3][1]/0.25;
-  let totOne = cid[4][1]/1;
-  let totFiv = cid[5][1]/5;
-  let totTen = cid[6][1]/10;
-  let totTwe = cid[7][1]/20;
-  let totHun = cid[8][1]/100;
-  let totalFunds = 0;
-  let changeDue = cash - price;
-  for(let i =0; i < cid.length; i++){
-    totalFunds = Math.round(totalFunds + cid[i][1]);
-  }
-  // Check for insufficient funds (use a for loop to add up the toal in the register)
-  if (price > totalFunds){
-    return {status: "INSUFFICIENT_FUNDS", change: []}
-  }
-  // closed if total in register = price
-  if (price == totalFunds){
-    return {status: "CLOSED", change: cid};
-  }
-  // open and change with change in coins and bills osrted highest to lowest
-  if (price < totalFunds){
+  let returnObject = {
+    status: '',
+    change: cid
+  };
 
+  //VARIABLES
+  let totalInTill = 0;
+    for (let i = 0; i < cid.length; i++){
+      totalInTill += 100*(cid[i][1]);
+    }
+    totalInTill = totalInTill / 100;
+
+  let changeDue = cash - price;
+  let arr = cid.slice().reverse();
+  let fCDue = cash - price;
+  let changeCumulative = actualChange;
+  let actualChange =[]
+    for (let i =0; i < cid.length; i++){
+      actualChange.push(cid.slice(i,1));
+    }
+    for (let i = 0; i < actualChange.length; i++){
+      actualChange[i][1] = 0;
+    }
+  
+  // function: changeDue calculates what the change should look like
+
+  //THE MEAT
+  if(changeDue == totalInTill){
+    returnObject.status = "CLOSED";
+    returnObject.change = cid;
+    return returnObject;
+  };
+  if(changeDue > totalInTill){
+    returnObject.status = "INSUFFICIENT_FUNDS";
+    returnObject.change = [];
+    return returnObject;
+  };
+  
+whichChange(arr, fCDue, changeCumulative);
+
+  //THE END RETURN
+  //console.log(checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]))
+  return returnObject;
+  //FUNCTIONS
+    //This function calculates the change amounts that need to be spit out.
+  function whichChange(arr, fCDue, changeCumulative){
+    console.log(fCDue)
+  /*  
+    let arr = cashLeft;
+    let fCDue = due;
+    let changeCumulative = actualChange;
+*/
+    
+    if (changeDue <= 0){
+      returnObject.status = "OPEN";
+      returnObject.change = actualChange;
+      return;
+    }
+    if ( fCDue >= 100 && arr[0][1] >= 100){
+      arr[0][1] = arr[0][1] - 100;
+      fCDue = fCDue - 100;
+    } else if (fCDue >= 20 && arr[1][1] >= 20){
+      arr[1][1] = arr[1][1] - 20;
+      fCDue = fCDue - 20;
+      fireWhatsLeft(fCDue, 1);
+    } else if (fCDue >= 10 && arr[2][1] >= 10){
+      arr[2][1] = arr[2][1] - 10;
+      fCdue = fCDue - 10;
+      fireWhatsLeft(fCDue, 2);
+    } else if (fCDue >= 5 && arr[3][1] >= 5){
+      arr[3][1] -= 5;
+      fCDue -= 5;
+      fireWhatsLeft(fCDue, 3)
+    } else if (fCDue >=1 && arr[4][1] >= 1){
+      arr[4][1] -= 1;
+      fCDue -= 1;
+      fireWhatsLeft(fCDue, 4);
+    } else if (fCDue*100 >= 0.25*100 && arr[5][1]*100 >= 0.25*100){
+      arr[5][1] = (arr[5][1]*100 - 0.25*100)/100;
+      fCDue = (fCDue*100 - 0.25*100)/100;
+      actualChange[5][1] = (actualChange[5][1]*100+0.25*100)/100;
+      fireWhatsLeft(fCDue, 5);
+    } else if (fCDue*100 >= 0.10*100 && arr[6][1]*100 >= 0.10*100){
+      arr[6][1] = (arr[6][1]*100 - 0.10*100)/100;
+      fCDue = (fCDue*100 - 0.10*100)/100;
+      fireWhatsLeft(fCDue, 6);
+    } else if (fCDue*100 >= 0.05*100 && arr[7][1]*100 >= 0.05*100){
+      arr[7][1] = (arr[7][1]*100 - 0.05*100)/100;
+      fCDue = (fCDue*100 - 0.05*100)/100;
+      fireWhatsLeft(fCDue, 7);
+    } else if (fCDue*100 >= 0.01*100 && arr[8][1]*100 >= 0.01*100){
+      arr[8][1] = (arr[8][1]*100 - 0.01*100)/100;
+      fCDue = (fCDue*100 - 0.01*100)/100;
+      fireWhatsLeft(fCDue, 8)
+    } else {
+      returnObject.status = "INSUFFICIENT_FUNDS";
+      returnObject.change = [];
+      return;
+    }
+  whichChange(arr,fCDue, changeCumulative)
   }
-  // effectively, I need to use the same thing I did for roman numerals , but with coins and cash to find if I have change for it.
-  let revArr = cid.reverse()
-  console.log(revArr)
-  console.log(changeDue)
-  function romNum(changeDue, revArr){
-    if (changeDue == 0){
-      return revArr;
+    // This function asks how much is left after the denomination of bills you currently have
+  function fireWhatsLeft(remainder, arrLevel){
+    if (remainder < whatsLeft(arrLevel)){
+      returnObject.status = "INSUFFICIENT_FUNDS";
+      returnObject.change = [];
+      return;
     }
-    if (Math.floor(changeDue/100) >= 1 && revArr[0][1] >= 100){
-      revArr[0][1]=revArr[0][1]-100
-      changeDue = changeDue - 100;
-      } else if (Math.floor(changeDue/20) > 0 && revArr[1][1] >= 20){
-        revArr[1][1] = revArr[1][1] - 20;
-        changeDue = changeDue - 20;
-      } else if (Math.floor(changeDue/10) > 0 && revArr[2][1] >= 10){
-        revArr[2][1] = revArr[2][1] - 10;
-        changeDue = changeDue - 10;
-      } else if (Math.floor(changeDue/5) > 0 && revArr[3][1] >= 5){
-        revArr[3][1] = revArr[3][1] - 5;
-        changeDue = changeDue - 5;
-      } else if (Math.floor(changeDue/1) > 0 && revArr[4][1] >= 1){
-        revArr[4][1] = revArr[4][1] -1;
-      }
+  };
+  function whatsLeft(x){
+    let changeArr = cid.reverse();
+    let total = 0;
+    for ( let i = x; i < changeArr.length; i++){
+      total = total + changeArr[i][1]*100;
     }
- 
+    return total/100;
+  };
 }
 
 checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]);
+
+console.log(checkCashRegister(19.5, 20, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]));
+
+console.log( "problem 2")
+console.log( checkCashRegister(3.26, 100, [["PENNY", 1.01], ["NICKEL", 2.05], ["DIME", 3.1], ["QUARTER", 4.25], ["ONE", 90], ["FIVE", 55], ["TEN", 20], ["TWENTY", 60], ["ONE HUNDRED", 100]]))
